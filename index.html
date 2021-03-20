@@ -1,0 +1,93 @@
+<!-- Place in document head -->
+<link rel="stylesheet" href="style.css">
+<audio id="themeAudio" preload="auto">
+    <source src="theme.ogg" type="audio/ogg">
+    <source src="theme.mp3" type="audio/mpeg">
+</audio>
+<div id="animationContainer" style="display:none">  
+    <article class="starwarsAnimation"> 
+        <div id="backgroundSpace"> 
+            <img src="pan-image.png"/> 
+        </div> 
+        <div class="animation"> 
+            <div class="introBackground"> 
+                <div id="intro" class="intro noselect">
+                    A long time ago in a galaxy far,
+                    <br>
+                    far away....
+                </div> 
+            </div> 
+            <div class="verticalWrapper"> 
+                <div id="logo" class="noselect"> 
+                    <img id="logoDefault" class="logoSub" src="logo.svg" alt="Star Wars Logo" style="display: block;"> 
+                    <div class="logoSub logoText" style="display: none;"> 
+                        <div>STaR</div><div>waRS</div> 
+                    </div> 
+                </div> 
+            </div> 
+            <div id="titles" class="noselect"> 
+                <div> 
+                    <p id="episode" class="tcenter">
+SOMETHING
+                    </p> 
+                    <p id="title" class="tcenter SWFont">
+WENT WRONG
+                    </p> 
+                    <div id="text">
+                        <p>
+Your GM miss configured this title crawl. We'll isn't this awkward.
+                        </p>
+                        <p>
+Be forgiving, GMing is not easy on this side of the galaxy.
+                        </p>
+                        <p>
+(See the developer tool's console log.)
+                        </p>
+                    </div> 
+                </div> 
+            </div> 
+        </div> 
+    </article>
+</div>
+<script>
+    let request = new XMLHttpRequest();
+    request.open("GET", window.location.hash.substring(1) + '.txt');
+    request.send();
+
+    request.onreadystatechange = (e) => {
+        if (request.readyState !== XMLHttpRequest.DONE) {
+            return;
+        }
+
+        let status = request.status;
+        if (status != 200) {
+            console.log("Status code", status, request.responseText);
+        }
+
+        let crawl = request.responseText.replace(/\r/g, "");
+        let sections = crawl.split("\n\n");
+
+	if (sections.length < 2) {
+            console.log("There must be at least two sections");
+            return;
+        }
+
+        let title = sections.shift().split("\n");
+
+        if (title.length != 2) {
+            console.log("First two lines of the session should be the title and subtitle");
+            return;
+        }
+        document.querySelector("#episode").innerHTML = title[0];
+        document.querySelector("#title").innerHTML = title[1];
+        document.querySelector("#text").innerHTML = "<p>" + sections.join("</p><p>") + "</p>";
+    }
+
+    let audio = document.querySelector('#themeAudio');
+    audio.oncanplaythrough = () => {
+        document.querySelector('#animationContainer').style.display = "block";
+        audio.play();
+    };
+    audio.load();
+</script>
+
